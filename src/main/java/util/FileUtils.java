@@ -22,6 +22,9 @@ public final class FileUtils {
             StringBuilder builder = new StringBuilder();
             String line;
             while ((line = bufferedReader.readLine()) != null) {
+                if (builder.length() > 0) {
+                    builder.append("\n");
+                }
                 builder.append(line);
             }
 
