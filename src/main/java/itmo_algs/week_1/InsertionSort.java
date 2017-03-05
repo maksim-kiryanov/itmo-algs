@@ -10,7 +10,7 @@ import java.util.Scanner;
 
 /**
  * Program reads array of numbers from file "input.txt", sorts them
- * and writes result and swapping indexes to "output.txt".
+ * and writes result and swapping indices to "output.txt".
  *
  * @author maksim-kiryanov
  */
@@ -30,11 +30,11 @@ public class InsertionSort {
             throw new RuntimeException("Error while read file input.txt", e);
         }
 
-        int[] indexes = sort(numbers);
+        int[] indices = sort(numbers);
 
         try (BufferedWriter bw = Files.newBufferedWriter(Paths.get("output.txt"));
              PrintWriter writer = new PrintWriter(bw)) {
-            println(writer, indexes);
+            println(writer, indices);
             println(writer, numbers);
         } catch (IOException e) {
             throw new RuntimeException("Error while write to file output.txt", e);
@@ -42,8 +42,8 @@ public class InsertionSort {
     }
 
     private static int[] sort(int[] numbers) {
-        int[] indexes = new int[numbers.length];
-        indexes[0] = 1;
+        int[] indices = new int[numbers.length];
+        indices[0] = 1;
 
         for (int i = 1; i < numbers.length; i++) {
             int j = i - 1;
@@ -54,10 +54,10 @@ public class InsertionSort {
                 j--;
             }
 
-            indexes[i] = j + 2;
+            indices[i] = j + 2;
         }
 
-        return indexes;
+        return indices;
     }
 
     private static void println(PrintWriter writer, int[] a) {

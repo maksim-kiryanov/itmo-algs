@@ -12,7 +12,7 @@ import java.util.Scanner;
  * Program reads from file "input.txt" number n (odd, 3 <= n <= 9999)
  * and then reads this count n real numbers (example, 1.00, 0.01).
  * Program finds lowest, median and highest values using insertion sorting
- * and writes these initial indexes to file "output.txt".
+ * and writes these initial indices to file "output.txt".
  *
  * @author maksim-kiryanov
  */
