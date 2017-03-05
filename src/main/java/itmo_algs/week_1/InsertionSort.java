@@ -48,8 +48,8 @@ public class InsertionSort {
         for (int i = 1; i < numbers.length; i++) {
             int j = i - 1;
             while (j >= 0 && numbers[j] > numbers[j + 1]) {
-                int temp = numbers[i];
-                numbers[i] = numbers[j];
+                int temp = numbers[j + 1];
+                numbers[j + 1] = numbers[j];
                 numbers[j] = temp;
                 j--;
             }
