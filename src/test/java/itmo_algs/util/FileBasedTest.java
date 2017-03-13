@@ -1,4 +1,4 @@
-package itmo_algs.week_1;
+package itmo_algs.util;
 
 import org.junit.Rule;
 import org.junit.rules.ExternalResource;
@@ -8,10 +8,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static itmo_algs.util.FileUtils.readFileToString;
+import static itmo_algs.util.FileUtils.writeStringToFile;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static util.FileUtils.readFileToString;
-import static util.FileUtils.writeStringToFile;
 
 /**
  * @author maksim-kiryanov
@@ -48,11 +48,11 @@ public class FileBasedTest {
         }
     };
 
-    void writeToInput(String content) {
+    protected void writeToInput(String content) {
         writeStringToFile(INPUT_FILE_PATH, content);
     }
 
-    void assertOutputFileContent(String value) {
+    protected void assertOutputFileContent(String value) {
         assertThat("Invalid output file content", readFileToString(OUTPUT_FILE_PATH), is(value));
     }
 }
