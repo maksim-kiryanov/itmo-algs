@@ -1,5 +1,6 @@
 package itmo_algs.week_1;
 
+import itmo_algs.util.FileBasedTest;
 import org.junit.Test;
 
 /**

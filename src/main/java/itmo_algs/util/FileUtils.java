@@ -1,4 +1,4 @@
-package util;
+package itmo_algs.util;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -13,11 +13,11 @@ import java.nio.file.Path;
  *
  * @author maksim-kiryanov
  */
-public final class FileUtils {
+final class FileUtils {
     private FileUtils() {
     }
 
-    public static String readFileToString(Path filePath) {
+    static String readFileToString(Path filePath) {
         try (BufferedReader bufferedReader = Files.newBufferedReader(filePath, StandardCharsets.UTF_8)) {
             StringBuilder builder = new StringBuilder();
             String line;
@@ -34,7 +34,7 @@ public final class FileUtils {
         }
     }
 
-    public static void writeStringToFile(Path filePath, String content) {
+    static void writeStringToFile(Path filePath, String content) {
         try (BufferedWriter writer = Files.newBufferedWriter(filePath, StandardCharsets.UTF_8);
              PrintWriter printWriter = new PrintWriter(writer)) {
             printWriter.println(content);
