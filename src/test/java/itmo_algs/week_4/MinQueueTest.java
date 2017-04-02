@@ -44,12 +44,6 @@ public class MinQueueTest extends FileBasedTest {
     }
 
     @Test
-    public void test() {
-        StringBuilder builder = new StringBuilder();
-
-    }
-
-    @Test
     public void testDequeue() {
         MinQueue.Dequeue dequeue = new MinQueue.Dequeue();
 
