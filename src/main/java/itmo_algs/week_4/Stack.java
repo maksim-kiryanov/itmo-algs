@@ -1,60 +1,40 @@
 package itmo_algs.week_4;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Scanner;
-
-import static itmo_algs.week_4.Stack.Command.Type.POP;
-import static itmo_algs.week_4.Stack.Command.Type.PUSH;
 
 /**
  * @author maksim-kiryanov
  */
 public class Stack {
+    private static final String PUSH_COMMAND = "+";
+    private static final String POP_COMMAND = "-";
+
     public static void main(String[] args) {
-        try (Scanner scanner = new Scanner(new File("input.txt")).useDelimiter("\\s+");
+        try (BufferedReader reader = Files.newBufferedReader(Paths.get("input.txt"));
              BufferedWriter bw = Files.newBufferedWriter(Paths.get("output.txt"));
              PrintWriter writer = new PrintWriter(bw)) {
-            int commandCount = scanner.nextInt();
+
+            int commandCount = Integer.parseInt(reader.readLine());
 
             ArrayBasedStack stack = new ArrayBasedStack();
             for (int i = 0; i < commandCount; i++) {
-                Command command = nextCommand(scanner);
-                if (command.type == PUSH) {
-                    stack.push(command.element);
-                } else {
+                String[] parts = reader.readLine().split(" ");
+
+                if (PUSH_COMMAND.equals(parts[0])) {
+                    stack.push(Integer.parseInt(parts[1]));
+                } else if (POP_COMMAND.equals(parts[0])) {
                     writer.println(stack.pop());
+                } else {
+                    throw new RuntimeException("Unknown command [" + parts[0] + "]");
                 }
             }
         } catch (IOException e) {
             throw new RuntimeException("Error while read file input.txt", e);
-        }
-    }
-
-    private static Command nextCommand(Scanner scanner) {
-        return new Command(scanner.nextLine());
-    }
-
-    static class Command {
-        enum Type {
-            PUSH, POP
-        }
-
-        Type type;
-        int element;
-
-        Command(String commandString) {
-            String[] parts = commandString.split(" ");
-            if (parts.length > 1) {
-                type = PUSH;
-                element = Integer.parseInt(parts[1]);
-            } else {
-                type = POP;
-            }
         }
     }
 
