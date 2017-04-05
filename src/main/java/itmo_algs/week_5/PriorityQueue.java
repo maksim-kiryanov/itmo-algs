@@ -14,17 +14,11 @@ public class PriorityQueue {
     private static final int MAX_HEAP_SIZE = 1_000_000;
 
     public static void main(String[] args) {
-        int[] heapIndex = new int[MAX_HEAP_SIZE];
-
-        SwapNodeInterceptor<ValueHolder> interceptor = (nodes, i1, i2) -> {
-            heapIndex[nodes[i1].order] = i1;
-            heapIndex[nodes[i2].order] = i2;
-        };
-
         try (BufferedReader reader = Files.newBufferedReader(Paths.get("input.txt"));
              BufferedWriter bw = Files.newBufferedWriter(Paths.get("output.txt"));
              PrintWriter writer = new PrintWriter(bw)) {
-            Heap<ValueHolder> heap = new Heap<>(interceptor);
+            OrderNodeDetector detector = new OrderNodeDetector();
+            Heap heap = new Heap(detector);
 
             int commandCount = Integer.parseInt(reader.readLine());
             for (int i = 0, adds = 0; i < commandCount; i++) {
@@ -33,15 +27,16 @@ public class PriorityQueue {
                 switch (commandParts[0]) {
                     case "A":
                         int key = Integer.parseInt(commandParts[1]);
-                        heap.add(new ValueHolder(key, adds++));
+                        heap.add(new Node(key, adds++));
                         break;
                     case "D":
                         int order = Integer.parseInt(commandParts[1]) - 1;
+                        int currentIndex = detector.getIndex(order);
                         int newKey = Integer.parseInt(commandParts[2]);
-                        heap.decreaseElement(order, new ValueHolder(newKey, order));
+                        heap.decreaseElement(currentIndex, new Node(newKey, order));
                         break;
                     case "X":
-                        ValueHolder value = heap.dequeue();
+                        Node value = heap.dequeue();
                         writer.println(value != null ? value.key : "*");
                         break;
                     default:
@@ -53,27 +48,24 @@ public class PriorityQueue {
         }
     }
 
-    static class Heap<T extends Comparable<T>> {
-        @SuppressWarnings("unchecked")
-        private T[] nodes = (T[]) new Comparable[MAX_HEAP_SIZE];
+    static class Heap {
+        private Node[] nodes = new Node[MAX_HEAP_SIZE];
         private int size = 0;
-        private SwapNodeInterceptor<T> interceptor;
+        private OrderNodeDetector detector;
 
-        public Heap(SwapNodeInterceptor<T> interceptor) {
-            this.interceptor = interceptor;
+        public Heap(OrderNodeDetector detector) {
+            this.detector = detector;
         }
 
-        void add(T node) {
+        void add(Node node) {
             size++;
             nodes[size - 1] = node;
-            decreaseElement(size - 1, node);
+            detector.initOrder(node, size - 1);
 
-            if (size == 1) {
-                interceptor.postSwap(nodes, 0, 0);
-            }
+            decreaseElement(size - 1, node);
         }
 
-        void decreaseElement(int index, T node) {
+        void decreaseElement(int index, Node node) {
             if (node.compareTo(nodes[index]) > 0) {
                 throw new RuntimeException("New node element more than old");
             }
@@ -81,74 +73,88 @@ public class PriorityQueue {
             nodes[index] = node;
             while (index > 0) {
                 int parentIndex = getParentIndex(index);
-                T parent = nodes[parentIndex];
+                Node parent = nodes[parentIndex];
                 if (parent.compareTo(nodes[index]) <= 0) break;
                 swap(parentIndex, index);
             }
         }
 
-        T dequeue() {
+        Node dequeue() {
             if (size == 0) {
                 return null;
             }
 
-            T node = nodes[0];
+            Node node = nodes[0];
 
-            swap(0, --size);
+            swap(0, size - 1);
+            size--;
             heapify(0);
 
             return node;
         }
 
         private void heapify(int index) {
-            T node = nodes[index];
+            Node node = nodes[index];
 
             int leftChildIndex = 2 * (index + 1) - 1;
-            T leftChild = nodes[leftChildIndex];
+            Node leftChild = nodes[leftChildIndex];
             int rightChildIndex = 2 * (index + 1);
-            T rightChild = nodes[rightChildIndex];
+            Node rightChild = nodes[rightChildIndex];
 
-            int localMinimum = index;
+            int localMinimumIndex = index;
             if (leftChildIndex < size && leftChild.compareTo(node) < 0) {
-                localMinimum = leftChildIndex;
+                localMinimumIndex = leftChildIndex;
             }
             if (rightChildIndex < size && rightChild.compareTo(node) < 0) {
-                localMinimum = rightChildIndex;
+                localMinimumIndex = rightChildIndex;
             }
 
-            if (localMinimum != index) {
-                swap(index, localMinimum);
-                heapify(localMinimum);
+            if (localMinimumIndex != index) {
+                swap(index, localMinimumIndex);
+                heapify(localMinimumIndex);
             }
         }
 
         private void swap(int i1, int i2) {
-            T tempNode = nodes[i1];
+            Node tempNode = nodes[i1];
             nodes[i1] = nodes[i2];
             nodes[i2] = tempNode;
-            interceptor.postSwap(nodes, i1, i2);
+            detector.detectSwap(nodes, i1, i2);
         }
 
         private int getParentIndex(int index) {
-            return index / 2;
+            return (index - 1) / 2;
         }
     }
 
-    interface SwapNodeInterceptor<T> {
-        void postSwap(T[] nodes, int i1, int i2);
+    static class OrderNodeDetector {
+        int[] heapIndex = new int[MAX_HEAP_SIZE];
+
+        void initOrder(Node node, int index) {
+            heapIndex[node.order] = index;
+        }
+
+        void detectSwap(Node[] nodes, int i1, int i2) {
+            heapIndex[nodes[i1].order] = i1;
+            heapIndex[nodes[i2].order] = i2;
+        }
+
+        int getIndex(int order) {
+            return heapIndex[order];
+        }
     }
 
-    static class ValueHolder implements Comparable<ValueHolder> {
+    static class Node implements Comparable<Node> {
         private int key;
         private int order;
 
-        public ValueHolder(int key, int order) {
+        public Node(int key, int order) {
             this.key = key;
             this.order = order;
         }
 
         @Override
-        public int compareTo(ValueHolder o) {
+        public int compareTo(Node o) {
             return Integer.compare(key, o.key);
         }
     }

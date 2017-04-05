@@ -26,4 +26,27 @@ public class PriorityQueueTest extends FileBasedTest {
                 "3\n" +
                 "*");
     }
+
+    @Test
+    public void testAddRemove() {
+        writeToInput("10\n" +
+                "A 3\n" +
+                "A 4\n" +
+                "A -671951765\n" +
+                "A 2\n" +
+                "A -983634102\n" +
+                "X\n" +
+                "X\n" +
+                "X\n" +
+                "X\n" +
+                "X");
+
+        PriorityQueue.main(new String[0]);
+
+        assertOutputFileContent("-983634102\n" +
+                "-671951765\n" +
+                "2\n" +
+                "3\n" +
+                "4");
+    }
 }
