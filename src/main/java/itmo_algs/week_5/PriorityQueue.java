@@ -21,13 +21,13 @@ public class PriorityQueue {
             Heap heap = new Heap(detector);
 
             int commandCount = Integer.parseInt(reader.readLine());
-            for (int i = 0, adds = 0; i < commandCount; i++) {
+            for (int i = 0, adds = 0; i < commandCount; i++, adds++) {
                 String[] commandParts = reader.readLine().split(" ");
 
                 switch (commandParts[0]) {
                     case "A":
                         int key = Integer.parseInt(commandParts[1]);
-                        heap.add(new Node(key, adds++));
+                        heap.add(new Node(key, adds));
                         break;
                     case "D":
                         int order = Integer.parseInt(commandParts[1]) - 1;
@@ -75,7 +75,9 @@ public class PriorityQueue {
                 int parentIndex = getParentIndex(index);
                 Node parent = nodes[parentIndex];
                 if (parent.compareTo(nodes[index]) <= 0) break;
+
                 swap(parentIndex, index);
+                index = parentIndex;
             }
         }
 
@@ -87,6 +89,7 @@ public class PriorityQueue {
             Node node = nodes[0];
 
             swap(0, size - 1);
+            nodes[size - 1] = null;
             size--;
             heapify(0);
 
@@ -94,24 +97,26 @@ public class PriorityQueue {
         }
 
         private void heapify(int index) {
-            Node node = nodes[index];
+            while (index < size / 2) {
+                Node node = nodes[index];
 
-            int leftChildIndex = 2 * (index + 1) - 1;
-            Node leftChild = nodes[leftChildIndex];
-            int rightChildIndex = 2 * (index + 1);
-            Node rightChild = nodes[rightChildIndex];
+                int leftChildIndex = 2 * (index + 1) - 1;
+                int rightChildIndex = 2 * (index + 1);
 
-            int localMinimumIndex = index;
-            if (leftChildIndex < size && leftChild.compareTo(node) < 0) {
-                localMinimumIndex = leftChildIndex;
-            }
-            if (rightChildIndex < size && rightChild.compareTo(node) < 0) {
-                localMinimumIndex = rightChildIndex;
-            }
+                int localMinimumIndex = index;
+                if (leftChildIndex < size && nodes[leftChildIndex].compareTo(node) < 0) {
+                    localMinimumIndex = leftChildIndex;
+                }
+                if (rightChildIndex < size && nodes[rightChildIndex].compareTo(node) < 0) {
+                    if (nodes[rightChildIndex].compareTo(nodes[leftChildIndex]) < 0) {
+                        localMinimumIndex = rightChildIndex;
+                    }
+                }
 
-            if (localMinimumIndex != index) {
+                if (localMinimumIndex == index) break;
+
                 swap(index, localMinimumIndex);
-                heapify(localMinimumIndex);
+                index = localMinimumIndex;
             }
         }
 
