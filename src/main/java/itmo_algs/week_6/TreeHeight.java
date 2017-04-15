@@ -21,7 +21,9 @@ public class TreeHeight {
             for (int i = 0; i < n; i++) {
                 tokenizer = new StringTokenizer(in.readLine());
                 int key = Integer.parseInt(tokenizer.nextToken());
-                tree.insert(new Node(key));
+                int left = Integer.parseInt(tokenizer.nextToken()) - 1;
+                int right = Integer.parseInt(tokenizer.nextToken()) - 1;
+                tree.insert(i, new Node(key, left, right));
             }
 
             out.println(tree.getHeight());
@@ -31,54 +33,48 @@ public class TreeHeight {
     }
 
     static class Tree {
-//        private static final int MAX_TREE_SIZE = 200000;
-//        private Node[] nodes = new Node[MAX_TREE_SIZE];
+        private static final int MAX_TREE_SIZE = 200000;
+        private Node[] nodes = new Node[MAX_TREE_SIZE];
 
-        private Node root;
-
-        void insert(Node node) {
-            if (root == null) {
-                root = node;
-                return;
-            }
-
-            Node parent = root;
-            while (true) {
-                if (parent.key < node.key) {
-                    if (parent.right == null) {
-                        parent.right = node;
-                        break;
-                    }
-                    parent = parent.right;
-                } else {
-                    if (parent.left == null) {
-                        parent.left = node;
-                        break;
-                    }
-                    parent = parent.left;
-                }
+        void insert(int index, Node node) {
+            if (checkRange(index)) {
+                nodes[index] = node;
             }
         }
 
+        private Node getNode(int index) {
+            return checkRange(index) ? nodes[index] : null;
+        }
+
+        private boolean checkRange(int index) {
+            return index >= 0 && index < nodes.length;
+        }
+
         int getHeight() {
-            return getHeight(root);
+            return getHeight(nodes[0]);
         }
 
         private int getHeight(Node node) {
             if (node == null) {
                 return 0;
             }
-            return 1 + Math.max(getHeight(node.left), getHeight(node.right));
+            return 1 + Math.max(getHeight(getNode(node.left)), getHeight(getNode(node.right)));
         }
     }
 
     static class Node {
         private int key;
-        private Node left;
-        private Node right;
+        private int left;
+        private int right;
 
         public Node(int key) {
             this.key = key;
+        }
+
+        public Node(int key, int left, int right) {
+            this(key);
+            this.left = left;
+            this.right = right;
         }
     }
 }
